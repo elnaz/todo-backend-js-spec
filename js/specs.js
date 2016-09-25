@@ -219,6 +219,32 @@ function defineSpecsFor(apiRoot){
         return expect(refetchedTodo).to.eventually.have.property("order",95);
       });
     });
+
+    describe("searching todos", function(){
+      beforeEach(function (){
+        Q.all( [
+          postRoot({title: "buy milk"}),
+          postRoot({title: "do laundry"})
+          ] );
+      });
+
+      it("can search for todos that contain a term", function(){
+        var term = 'buy';
+        return get(apiRoot + '?title=' + term)
+          .then( function(todos){
+            expect(todos).to.have.length(1);
+            expect(todos[0].title).to.contain(term);
+          });
+      });
+
+      it("responds with an empty array when no todos match", function(){
+        return get(apiRoot + '?title=asdf')
+          .then( function(todos){
+            expect(todos).to.eql([]);
+          });
+      });
+    });
+
   });
 
 
